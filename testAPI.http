@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:8081/api
+
+###
+POST {{baseUrl}}/todo
+accept: */*
+content-type: application/json
+
+{
+  "title": "title_Todo_1"
+}
+
+###todo
+GET {{baseUrl}}/todo
+content-type: application/json
+
+#https://viblo.asia/p/tim-hieu-ve-http-status-code-lA7GKwx5GKZQ
