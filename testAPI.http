@@ -1,16 +1,47 @@
 @baseUrl = http://localhost:8081/api
 
-###
+###create todo
 POST {{baseUrl}}/todo
 accept: */*
 content-type: application/json
 
 {
-  "title": "title_Todo_1"
+  "title": "202209 - MCF7"
 }
 
-###todo
+###get all todo
 GET {{baseUrl}}/todo
 content-type: application/json
 
+
+### find by id todo
+GET {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990
+content-type: application/json
+
+### create todo detail
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/create-detail
+accept: */*
+content-type: application/json
+
+{
+  "details": {
+    "d_title": "d_title_created",
+    "d_content": "d_content_created"
+  }
+}
+
+### update todo detail
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/update-detail
+accept: */*
+content-type: application/json
+
+{
+  "details": {
+    "_id": "6331cb99cf3dd9dadec3b996",
+    "d_title": "d_title_upadted_2",
+    "d_content": "d_content__upadted"
+  }
+}
+
+###
 #https://viblo.asia/p/tim-hieu-ve-http-status-code-lA7GKwx5GKZQ
