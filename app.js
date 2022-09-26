@@ -15,14 +15,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger("dev"));
 
-const domainsFromEnv = process.env.CORS_DOMAINS || "";
-const whitelist = domainsFromEnv.split(",").map((item) => item.trim());
-
 app.use(function (req, res, next) {
-
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', whitelist);
-
+  // res.setHeader('Access-Control-Allow-Origin', "*");
+  const domainsFromEnv = process.env.CORS_DOMAINS || "";
+  const allowedOrigins = domainsFromEnv.split(",").map((item) => item.trim());
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+       res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
