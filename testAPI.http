@@ -36,11 +36,9 @@ accept: */*
 content-type: application/json
 
 {
-  "details": {
-    "_id": "6331cb99cf3dd9dadec3b996",
-    "d_title": "d_title_upadted_2",
-    "d_content": "d_content__upadted"
-  }
+  "_id": "6331cb99cf3dd9dadec3b996",
+  "d_title": "d_title_upadted_2",
+  "d_content": "d_content__upadted"
 }
 
 ###

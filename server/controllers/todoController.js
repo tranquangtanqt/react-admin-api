@@ -130,10 +130,10 @@ export function createTodoDetail(req, res) {
  * @param {*} res 
  */
 export function updateTodoDetail(req, res) {
-  let conditions = {"_id": req.params.id , "details._id" : req.body.details._id};
+  let conditions = {"_id": req.params.id , "details._id" : req.body._id};
   let obj = {
-    "details.$.d_title": req.body.details.d_title,
-    "details.$.d_content": req.body.details.d_content
+    "details.$.d_title": req.body.d_title,
+    "details.$.d_content": req.body.d_content
   };
 
   Todo.findOneAndUpdate(
