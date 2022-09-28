@@ -22,8 +22,14 @@ const todoSchema = new mongoose.Schema({
   tasks: [
     {
       _id: mongoose.Schema.Types.ObjectId,
-      t_name: {
+      t_content: {
         type: String,
+      },
+      t_status: { //0: chưa hoàn thành, 1: hoàn thành
+        type: String,
+      },
+      t_order: {
+        type: Number,
       },
     },
   ],

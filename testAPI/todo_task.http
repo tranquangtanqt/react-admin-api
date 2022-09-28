@@ -1,0 +1,18 @@
+@baseUrl = http://localhost:8081/api
+
+###get all todo
+GET {{baseUrl}}/todo
+content-type: application/json
+
+### find by id todo
+GET {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990
+content-type: application/json
+
+### create todo task
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/create-task
+accept: */*
+content-type: application/json
+
+{
+  "t_content": "t_content_create"
+}

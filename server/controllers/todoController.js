@@ -4,9 +4,9 @@ import mongoose from "mongoose";
 /********* TODO **********/
 /**
  * create new todo
- * @param {*} req 
- * @param {*} res 
- * @returns 
+ * @param {*} req
+ * @param {*} res
+ * @returns
  */
 export function createTodo(req, res) {
   const todo = new Todo({
@@ -35,8 +35,8 @@ export function createTodo(req, res) {
 
 /**
  * Get all todo
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 export function getAll(req, res) {
   Todo.find()
@@ -59,8 +59,8 @@ export function getAll(req, res) {
 
 /**
  * getById todo
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 export function getById(req, res) {
   Todo.findById(req.params.id)
@@ -84,79 +84,104 @@ export function getById(req, res) {
 /********* TODO DETAIL **********/
 /**
  * create todo detail
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 export function createTodoDetail(req, res) {
   let conditions = req.params.id;
   let obj = [
     {
       _id: mongoose.Types.ObjectId(),
-      d_title: req.body.details.d_title,
-      d_content: req.body.details.d_content,
+      d_title: req.body.d_title,
+      d_content: req.body.d_content,
     },
-  ]
+  ];
 
   // create
   Todo.findByIdAndUpdate(
-    conditions, 
+    conditions,
     {
-      $push: {
-        details: obj,
-      }
+      $push: { details: obj },
     },
-    {new: true}                 //Thêm điều kiện để trả về Object
+    { new: true } //Thêm điều kiện để trả về Object
   )
-  .then((response) => {
-    return res.status(200).json({
-      status: true,
-      message: "Created todo detail",
-      data: response,
+    .then((response) => {
+      return res.status(200).json({
+        status: true,
+        message: "Created todo detail",
+        data: response,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
     });
-  })
-  .catch((err) => {
-    console.log(err);
-    res.status(500).json({
-      status: false,
-      message: "Server error. Please try again.",
-      error: err.message,
-    });
-  });;
 }
 
 /**
  * update todo detail
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 export function updateTodoDetail(req, res) {
-  let conditions = {"_id": req.params.id , "details._id" : req.body._id};
+  let conditions = { _id: req.params.id, "details._id": req.body._id };
   let obj = {
     "details.$.d_title": req.body.d_title,
-    "details.$.d_content": req.body.d_content
+    "details.$.d_content": req.body.d_content,
   };
 
   Todo.findOneAndUpdate(
-    conditions, 
-    {
-      $set: obj
-    },
-    {new: true}             //Thêm điều kiện để trả về Object
+    conditions,
+    { $set: obj },
+    { new: true } //Thêm điều kiện để trả về Object
   )
-  .then((response) => {
-    return res.status(200).json({
-      status: true,
-      message: "Updated todo details",
-      data: response,
+    .then((response) => {
+      return res.status(200).json({
+        status: true,
+        message: "Updated todo detail",
+        data: response,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
     });
-  })
-  .catch((err) => {
-    console.log(err);
-    res.status(500).json({
-      status: false,
-      message: "Server error. Please try again.",
-      error: err.message,
-    });
-  });;
 }
 
+/**
+ * delete todo detail
+ * @param {*} req
+ * @param {*} res
+ */
+export function deleteTodoDetail(req, res) {
+  let conditions = { _id: req.params.id };
+  let obj = { details: {"_id": req.body._id} };
+  Todo.findOneAndUpdate(
+    conditions,
+    { $pull: obj },
+    { new: true } //Thêm điều kiện để trả về Object
+  )
+    .then((response) => {
+      return res.status(200).json({
+        status: true,
+        message: "Deleted todo detail",
+        data: response,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
+    });
+}

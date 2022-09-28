@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:8081/api
+
+###create todo
+POST {{baseUrl}}/todo
+accept: */*
+content-type: application/json
+
+{
+  "title": "202209 - MCF7"
+}
+
+###get all todo
+GET {{baseUrl}}/todo
+content-type: application/json
+
+### find by id todo
+GET {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990
+content-type: application/json
+
+###
+#https://viblo.asia/p/tim-hieu-ve-http-status-code-lA7GKwx5GKZQ
+#Use the $pull or $pullAll operators to remove the item from the array :

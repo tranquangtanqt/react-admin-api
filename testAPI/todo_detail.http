@@ -1,18 +1,8 @@
 @baseUrl = http://localhost:8081/api
 
-###create todo
-POST {{baseUrl}}/todo
-accept: */*
-content-type: application/json
-
-{
-  "title": "202209 - MCF7"
-}
-
 ###get all todo
 GET {{baseUrl}}/todo
 content-type: application/json
-
 
 ### find by id todo
 GET {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990
@@ -24,10 +14,8 @@ accept: */*
 content-type: application/json
 
 {
-  "details": {
-    "d_title": "d_title_created",
-    "d_content": "d_content_created"
-  }
+  "d_title": "d_title_created",
+  "d_content": "d_content_created"
 }
 
 ### update todo detail
@@ -41,5 +29,11 @@ content-type: application/json
   "d_content": "d_content__upadted"
 }
 
-###
-#https://viblo.asia/p/tim-hieu-ve-http-status-code-lA7GKwx5GKZQ
+### delete todo detail
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/delete-detail
+accept: */*
+content-type: application/json
+
+{
+  "_id": "633454aeb1c2072442a2fa90"
+}
