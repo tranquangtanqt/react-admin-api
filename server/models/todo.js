@@ -26,9 +26,12 @@ const todoSchema = new mongoose.Schema({
         type: String,
       },
       t_status: { //0: chưa hoàn thành, 1: hoàn thành
-        type: String,
+        type: Number,
       },
-      t_order: {
+      t_left: {
+        type: Number,
+      },
+      t_right: {
         type: Number,
       },
     },

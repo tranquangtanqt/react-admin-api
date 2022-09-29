@@ -14,5 +14,39 @@ accept: */*
 content-type: application/json
 
 {
-  "t_content": "t_content_create"
+  "t_content": "t_content_create",
+  "t_left": 1,
+  "t_right": 2
+}
+
+### update-status-to-conpleted-task
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/update-status-to-conpleted-task
+accept: */*
+content-type: application/json
+
+{
+  "_id": "633589cb29bf4eeb6f0c1548",
+  "t_status": 1,
+  "t_left": 0,
+  "t_right": 0,
+}
+
+### update todo task
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/update-task
+accept: */*
+content-type: application/json
+
+{
+  "_id": "63357d4fb24395f0dd0892fb",
+  "d_title": "d_title_upadted_2",
+  "d_content": "d_content__upadted"
+}
+
+### delete todo task
+PUT {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990/delete-task
+accept: */*
+content-type: application/json
+
+{
+  "_id": "63357d4fb24395f0dd0892fb"
 }
