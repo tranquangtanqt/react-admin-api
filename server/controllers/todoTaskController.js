@@ -84,12 +84,10 @@ export function updateStatusTask(req, res) {
  * @param {*} req
  * @param {*} res
  */
-export function updateTodoTask(req, res) {
+export function updateTodoTaskContent(req, res) {
   let conditions = { _id: req.params.id, "tasks._id": req.body._id };
   let obj = {
-    "tasks.$.t_content": req.body.t_content,
-    "tasks.$.t_left": req.body.t_left,
-    "tasks.$.t_right": req.body.t_right,
+    "tasks.$.t_content": req.body.t_content
   };
 
   Todo.findOneAndUpdate(
