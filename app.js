@@ -73,3 +73,6 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Our server is running on port ${port}`);
 });
+
+
+//mongodb+srv://tantq:<password>@cluster0.7omrglg.mongodb.net/?retryWrites=true&w=majority

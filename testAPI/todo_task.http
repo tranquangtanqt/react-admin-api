@@ -14,9 +14,9 @@ accept: */*
 content-type: application/json
 
 {
-  "t_content": "t_content_create",
-  "t_left": 1,
-  "t_right": 2
+  "t_content": "t_content_create2",
+  "t_status": 0,
+  "t_order_number": 2
 }
 
 ### update-status-to-conpleted-task
@@ -48,5 +48,5 @@ accept: */*
 content-type: application/json
 
 {
-  "_id": "63357d4fb24395f0dd0892fb"
+  "_id": "633ba10fd98b9ffb950b26b9"
 }

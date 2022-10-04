@@ -28,12 +28,9 @@ const todoSchema = new mongoose.Schema({
       t_status: { //0: chưa hoàn thành, 1: hoàn thành
         type: Number,
       },
-      t_left: {
+      t_order_number: {
         type: Number,
-      },
-      t_right: {
-        type: Number,
-      },
+      }
     },
   ],
 });

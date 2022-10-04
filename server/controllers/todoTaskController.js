@@ -9,13 +9,13 @@ import mongoose from "mongoose";
  */
 export function createTodoTask(req, res) {
   let conditions = req.params.id;
+  console.log(req.body);
   let obj = [
     {
       _id: mongoose.Types.ObjectId(),
       t_content: req.body.t_content,
       t_status: req.body.t_status,
-      t_left: req.body.t_left,
-      t_right: req.body.t_right
+      t_order_number: req.body.t_order_number
     },
   ];
 
@@ -50,11 +50,11 @@ export function createTodoTask(req, res) {
  * @param {*} res
  */
 export function updateStatusTask(req, res) {
+  console.log(req.body);
   let conditions = { _id: req.params.id, "tasks._id": req.body._id };
   let obj = {
     "tasks.$.t_status": req.body.t_status,
-    "tasks.$.t_left": req.body.t_left,
-    "tasks.$.t_right": req.body.t_right,
+    "tasks.$.t_order_number": req.body.t_order_number,
   };
 
   Todo.findOneAndUpdate(
