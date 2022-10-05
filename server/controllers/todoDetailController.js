@@ -14,6 +14,7 @@ export function createTodoDetail(req, res) {
       _id: mongoose.Types.ObjectId(),
       d_title: req.body.d_title,
       d_content: req.body.d_content,
+      d_order_number: req.body.d_order_number
     },
   ];
 
@@ -63,6 +64,39 @@ export function updateTodoDetail(req, res) {
       return res.status(200).json({
         status: true,
         message: "Updated todo detail",
+        data: response,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
+    });
+}
+
+/**
+ * update todo detail
+ * @param {*} req
+ * @param {*} res
+ */
+ export function updateTodoDetailOrderNumber(req, res) {
+  let conditions = { _id: req.params.id, "details._id": req.body._id };
+  let obj = {
+    "details.$.d_order_number": req.body.d_order_number
+  };
+
+  Todo.findOneAndUpdate(
+    conditions,
+    { $set: obj },
+    { new: true } //Thêm điều kiện để trả về Object
+  )
+    .then((response) => {
+      return res.status(200).json({
+        status: true,
+        message: "Updated todo detail d_order_number",
         data: response,
       });
     })

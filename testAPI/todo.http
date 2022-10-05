@@ -17,6 +17,16 @@ content-type: application/json
 GET {{baseUrl}}/todo/6331cb6ecf3dd9dadec3b990
 content-type: application/json
 
+### find by id todo
+PATCH {{baseUrl}}/todo/delete
+accept: */*
+content-type: application/json
+
+{
+  "_id": "633d8b02973495fd0906de4e"
+}
+
+
 ###
 #https://viblo.asia/p/tim-hieu-ve-http-status-code-lA7GKwx5GKZQ
 #Use the $pull or $pullAll operators to remove the item from the array :

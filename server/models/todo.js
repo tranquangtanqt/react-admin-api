@@ -8,6 +8,7 @@ const todoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  order_number: Number,
   details: [
     {
       _id: mongoose.Schema.Types.ObjectId,
@@ -17,6 +18,9 @@ const todoSchema = new mongoose.Schema({
       d_content: {
         type: String,
       },
+      d_order_number: {
+        type: Number
+      }
     },
   ],
   tasks: [
