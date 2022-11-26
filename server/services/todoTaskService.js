@@ -28,6 +28,11 @@ class TodoTaskService {
     });
   }
 
+  /**
+   * 
+   * @param {*} tasks 
+   * @returns 
+   */
   orderTaks(tasks) {
     let result = {
       completed: null,
@@ -59,23 +64,23 @@ class TodoTaskService {
     });
   }
 
-  //   /**
-  //    *
-  //    * @param {*} conditions
-  //    * @param {*} obj
-  //    * @returns
-  //    */
-  //   delete(conditions, obj) {
-  //     return new Promise((resolve, reject) => {
-  //       Todo.findOneAndUpdate(conditions, { $pull: obj })
-  //         .then((response) => {
-  //           resolve(response);
-  //         })
-  //         .catch((err) => {
-  //           reject(err);
-  //         });
-  //     });
-  //   }
+  /**
+   *
+   * @param {*} conditions
+   * @param {*} obj
+   * @returns
+   */
+  delete(conditions, obj) {
+    return new Promise((resolve, reject) => {
+      Todo.findOneAndUpdate(conditions, { $pull: obj })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
 }
 
 export default new TodoTaskService();

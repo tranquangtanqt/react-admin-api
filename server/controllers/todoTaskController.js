@@ -73,7 +73,7 @@ export function createTodoTask(req, res) {
  * @param {*} req
  * @param {*} res
  */
-export function updateStatusTask(req, res) {
+export function updateTodoTaskStatus(req, res) {
   TodoService.getById(req.params.id)
     .then((todo) => {
       // To completed
@@ -125,38 +125,96 @@ export function updateStatusTask(req, res) {
     });
 }
 
-// /**
-//  * update todo task
-//  * @param {*} req
-//  * @param {*} res
-//  */
-// export function updateTodoTaskContent(req, res) {
-//   let conditions = { _id: req.params.id, "tasks._id": req.body._id };
-//   let obj = {
-//     "tasks.$.t_content": req.body.t_content
-//   };
+/**
+ * update todo task
+ * @param {*} req
+ * @param {*} res
+ */
+export function updateTodoTaskContent(req, res) {
+  let conditions = { _id: req.params.id, "tasks._id": req.body._id };
+  let obj = {
+    "tasks.$.t_content": req.body.t_content,
+  };
 
-//   Todo.findOneAndUpdate(
-//     conditions,
-//     { $set: obj },
-//     { new: true } //Thêm điều kiện để trả về Object
-//   )
-//     .then((response) => {
-//       return res.status(200).json({
-//         status: true,
-//         message: "Updated todo task",
-//         data: response,
-//       });
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(500).json({
-//         status: false,
-//         message: "Server error. Please try again.",
-//         error: err.message,
-//       });
-//     });
-// }
+  TodoTaskService.update(conditions, obj)
+    .then((response) => {
+      return res.status(200).json({
+        status: true,
+        data: response,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+export function updateTodoTaskOrderNumber(req, res) {
+  let isUp = req.body.isUp;
+
+  let id = req.body._id;
+  let orderNumber = 0;
+
+  let idSwap = null;
+  let orderNumberSwap = 0;
+
+  TodoService.getById(req.params.id)
+    .then((todo) => {
+      if (isUp) {
+        todo.tasks.forEach((item, index, array) => {
+          if (item._id.toString() === id) {
+            orderNumber = array[index].t_order_number;
+
+            idSwap = array[index - 1]._id;
+            orderNumberSwap = array[index - 1].t_order_number;
+          }
+        });
+      } else {
+        todo.tasks.forEach((item, index, array) => {
+          if (item._id.toString() === id) {
+            orderNumber = array[index].t_order_number;
+
+            idSwap = array[index + 1]._id;
+            orderNumberSwap = array[index + 1].t_order_number;
+          }
+        });
+      }
+
+      console.log(id);
+      console.log(orderNumber);
+      console.log(idSwap);
+      console.log(orderNumberSwap);
+
+      let conditions = { _id: req.params.id, "tasks._id": req.body._id };
+      let obj = {
+        "tasks.$.t_order_number": orderNumberSwap,
+      };
+
+      TodoTaskService.update(conditions, obj)
+        .then(() => {
+          conditions = { _id: req.params.id, "tasks._id": idSwap };
+          obj = {
+            "tasks.$.t_order_number": orderNumber,
+          };
+
+          TodoTaskService.update(conditions, obj)
+            .then((response) => {
+              return res.status(200).json({
+                status: true,
+                data: response,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 /**
  * delete todo task
@@ -166,24 +224,14 @@ export function updateStatusTask(req, res) {
 export function deleteTodoTask(req, res) {
   let conditions = { _id: req.params.id };
   let obj = { tasks: { _id: req.body._id } };
-  Todo.findOneAndUpdate(
-    conditions,
-    { $pull: obj },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
+  TodoTaskService.delete(conditions, obj)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "Deleted todo task",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
