@@ -1,45 +1,44 @@
-import Todo from "../models/todo";
 import mongoose from "mongoose";
-
+import TodoDetailService from "../services/todoDetailService";
+import TodoService from "../services/todoService";
 /********* TODO DETAIL **********/
+
 /**
  * create todo detail
  * @param {*} req
  * @param {*} res
  */
 export function createTodoDetail(req, res) {
-  let conditions = req.params.id;
-  let obj = [
-    {
-      _id: mongoose.Types.ObjectId(),
-      d_title: req.body.d_title,
-      d_content: req.body.d_content,
-      d_order_number: req.body.d_order_number
-    },
-  ];
+  TodoService.getById(req.params.id)
+    .then((todo) => {
+      let maxOrderNumber = Math.max(...todo.details.map((item) => item["d_order_number"]));
+      if(!isFinite(maxOrderNumber) || !maxOrderNumber) {
+        maxOrderNumber = 0;
+      }
+      
+      let conditions = req.params.id;
+      let obj = [
+        {
+          _id: mongoose.Types.ObjectId(),
+          d_title: req.body.d_title,
+          d_content: req.body.d_content,
+          d_order_number: maxOrderNumber + 1,
+        },
+      ];
 
-  // create
-  Todo.findByIdAndUpdate(
-    conditions,
-    {
-      $push: { details: obj },
-    },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
-    .then((response) => {
-      return res.status(200).json({
-        status: true,
-        message: "Created todo detail",
-        data: response,
-      });
+      TodoDetailService.create(conditions, obj)
+        .then((response) => {
+          return res.status(200).json({
+            status: true,
+            data: response,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
 
@@ -55,25 +54,15 @@ export function updateTodoDetail(req, res) {
     "details.$.d_content": req.body.d_content,
   };
 
-  Todo.findOneAndUpdate(
-    conditions,
-    { $set: obj },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
+  TodoDetailService.update(conditions, obj)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "Updated todo detail",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
 
@@ -82,60 +71,87 @@ export function updateTodoDetail(req, res) {
  * @param {*} req
  * @param {*} res
  */
- export function updateTodoDetailOrderNumber(req, res) {
-  let conditions = { _id: req.params.id, "details._id": req.body._id };
-  let obj = {
-    "details.$.d_order_number": req.body.d_order_number
-  };
+export function updateTodoDetailOrderNumber(req, res) {
+  let isUp = req.body.isUp;
 
-  Todo.findOneAndUpdate(
-    conditions,
-    { $set: obj },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
-    .then((response) => {
-      return res.status(200).json({
-        status: true,
-        message: "Updated todo detail d_order_number",
-        data: response,
-      });
+  let idDetail = req.body._id;
+  let orderNumber = 0;
+
+  let idDetailSwap = null;
+  let orderNumberSwap = 0;
+
+  TodoService.getById(req.params.id)
+    .then((todoDetails) => {
+      if (isUp) {
+        todoDetails.details.forEach((item, index, array) => {
+          if (item._id.toString() === idDetail) {
+            orderNumber = array[index].d_order_number;
+
+            idDetailSwap = array[index - 1]._id;
+            orderNumberSwap = array[index - 1].d_order_number;
+          }
+        });
+      } else {
+        todoDetails.details.forEach((item, index, array) => {
+          if (item._id.toString() === idDetail) {
+            orderNumber = array[index].d_order_number;
+
+            idDetailSwap = array[index + 1]._id;
+            orderNumberSwap = array[index + 1].d_order_number;
+          }
+        });
+      }
+
+      let conditions = { _id: req.params.id, "details._id": req.body._id };
+      let obj = {
+        "details.$.d_order_number": orderNumberSwap,
+      };
+
+      TodoDetailService.update(conditions, obj)
+        .then(() => {
+          conditions = { _id: req.params.id, "details._id": idDetailSwap };
+          obj = {
+            "details.$.d_order_number": orderNumber,
+          };
+
+          TodoDetailService.update(conditions, obj)
+            .then((response) => {
+              return res.status(200).json({
+                status: true,
+                data: response,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
+
 
 /**
  * delete todo detail
  * @param {*} req
  * @param {*} res
  */
-export function deleteTodoDetail(req, res) {
+ export function deleteTodoDetail(req, res) {
   let conditions = { _id: req.params.id };
   let obj = { details: {"_id": req.body._id} };
-  Todo.findOneAndUpdate(
-    conditions,
-    { $pull: obj },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
+
+  TodoDetailService.delete(conditions, obj)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "Deleted todo detail",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }

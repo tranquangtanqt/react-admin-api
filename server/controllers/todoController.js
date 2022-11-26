@@ -1,38 +1,6 @@
-import Todo from "../models/todo";
+import TodoService from "../services/todoService";
 import mongoose from "mongoose";
-
-/********* TODO **********/
-/**
- * create new todo
- * @param {*} req
- * @param {*} res
- * @returns
- */
-export function createTodo(req, res) {
-  const todo = new Todo({
-    _id: mongoose.Types.ObjectId(),
-    title: req.body.title,
-    order_number:  req.body.order_number,
-  });
-
-  return todo
-    .save()
-    .then((newTodo) => {
-      return res.status(200).json({
-        status: true,
-        message: "New todo created successfully",
-        data: newTodo,
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: error.message,
-      });
-    });
-}
+import Todo from "../models/todo";
 
 /**
  * Get all todo
@@ -40,21 +8,48 @@ export function createTodo(req, res) {
  * @param {*} res
  */
 export function getAll(req, res) {
-  Todo.find()
+  TodoService.getAll()
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "A list of all todo",
         data: response,
       });
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+/**
+ * create new todo
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
+export function createTodo(req, res) {
+  TodoService.getAll()
+    .then((response) => {
+      let orderNumberArr = response.map((o) => o.order_number);
+      let max = Math.max(...orderNumberArr);
+      const todo = new Todo({
+        _id: mongoose.Types.ObjectId(),
+        title: req.body.title,
+        order_number: max + 1,
       });
+
+      TodoService.create(todo)
+        .then(() => {
+          return res.status(200).json({
+            status: true,
+            data: null,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -64,46 +59,15 @@ export function getAll(req, res) {
  * @param {*} res
  */
 export function getById(req, res) {
-  Todo.findById(req.params.id)
+  TodoService.getById(req.params.id)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "A record of list todo",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
-    });
-}
-
-/**
- * delete todo task
- * @param {*} req
- * @param {*} res
- */
-export function deleteTodo(req, res) {
-  let conditions = { _id: req.body._id };
-  Todo.deleteOne(conditions)
-    .then((response) => {
-      return res.status(200).json({
-        status: true,
-        message: "Deleted todo",
-        data: response,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
 
@@ -112,31 +76,21 @@ export function deleteTodo(req, res) {
  * @param {*} req
  * @param {*} res
  */
- export function updateTodoTitle(req, res) {
-  let conditions = { _id: req.body._id};
+export function updateTitle(req, res) {
+  let conditions = { _id: req.body._id };
   let obj = {
-    "title": req.body.title
+    title: req.body.title,
   };
 
-  Todo.findByIdAndUpdate(
-    conditions,
-    { $set: obj },
-    { new: true } //Thêm điều kiện để trả về Object
-  )
+  TodoService.update(conditions, obj)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "Updated todo",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
 
@@ -145,29 +99,80 @@ export function deleteTodo(req, res) {
  * @param {*} req
  * @param {*} res
  */
- export function updateTodoOrderNumber(req, res) {
-  let conditions = { _id: req.body._id };
-  let obj = {
-    "order_number": req.body.order_number,
-  };
+export function updateOrderNumber(req, res) {
+  let id = req.body._id;
+  let isUp = req.body.isUp;
 
-  Todo.findByIdAndUpdate(
-    conditions,
-    { $set: obj }
-  )
+  let orderNumber = 0;
+  let idSwap = null;
+  let orderNumberSwap = 0;
+
+  TodoService.getAll()
+    .then((todos) => {
+      if (isUp) {
+        todos.forEach((item, index, array) => {
+          if (item._id.toString() === id) {
+            orderNumber = array[index].order_number;
+            idSwap = array[index - 1]._id;
+            orderNumberSwap = array[index - 1].order_number;
+          }
+        });
+      } else {
+        todos.forEach((item, index, array) => {
+          if (item._id.toString() === id) {
+            orderNumber = array[index].order_number;
+            idSwap = array[index + 1]._id;
+            orderNumberSwap = array[index + 1].order_number;
+          }
+        });
+      }
+
+      let conditions = { _id: req.body._id };
+      let obj = {
+        order_number: orderNumberSwap,
+      };
+
+      TodoService.update(conditions, obj)
+        .then(() => {
+          conditions = { _id: idSwap };
+          obj = {
+            order_number: orderNumber,
+          };
+
+          TodoService.update(conditions, obj)
+            .then((response) => {
+              return res.status(200).json({
+                status: true,
+                data: response,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+/**
+ * delete todo
+ * @param {*} req
+ * @param {*} res
+ */
+export function deleteTodo(req, res) {
+  TodoService.delete(req.body._id)
     .then((response) => {
       return res.status(200).json({
         status: true,
-        message: "Updated order number completed",
         data: response,
       });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
-        status: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
     });
 }
