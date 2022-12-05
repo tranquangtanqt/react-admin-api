@@ -69,7 +69,8 @@ app.get("/", (req, res) => {
     message: "Welcome to Project with Nodejs Express and MongoDB",
   });
 });
-app.listen(port, () => {
+app.listen(port, (err) => {
+  if(err) throw err;
   console.log(`Our server is running on port ${port}`);
 });
 
